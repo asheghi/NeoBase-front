@@ -1,10 +1,6 @@
 <template>
   <div class="ManageProjects">
     <div class="list">
-      <button class="card" @click="onNewProject">
-        <IconPlus viewBox="0 0 20 20" class="icon" />
-        <span>New Project</span>
-      </button>
       <template v-if="fetching">
         <div v-for="i in 3" :key="i" class="card skeloading"></div>
       </template>
@@ -18,12 +14,13 @@
           <IconFolder class="icon" viewBox="0 0 24 24" />
           {{ p.name }}
         </router-link>
-        <div v-if="!projects || !projects.length" class="no-data">
-          you have no projects.
-        </div>
+        <button class="card" @click="onNewProject">
+          <IconPlus viewBox="0 0 20 20" class="icon" />
+          <span>New Project</span>
+        </button>
       </template>
     </div>
-    <NewProjectModal ref="newProjectModal" />
+    <NewProjectModal ref="newProjectModal" @created="onNewProjectCreated" />
   </div>
 </template>
 
@@ -48,6 +45,9 @@ export default {
   methods: {
     onNewProject() {
       this.$refs.newProjectModal.show();
+    },
+    onNewProjectCreated() {
+      this.fetchData();
     },
     async fetchData() {
       this.fetching = true;

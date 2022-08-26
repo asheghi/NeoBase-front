@@ -31,6 +31,7 @@ import { toast } from "../../../../plugins/alert.js";
 export default {
   name: "NewProjectModal",
   components: { Modal, NButton },
+emits: ['created'],
   data() {
     return {
       form: {
@@ -52,7 +53,7 @@ export default {
         });
         this.$refs.modal.hide();
         this.form.name = "";
-        await this.fetchData();
+        this.$emit("created", data);
         toast("New project created");
       } catch (e) {
         console.error(e);
