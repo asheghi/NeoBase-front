@@ -7,7 +7,7 @@
           <h3
             v-if="!it.page"
             :key="it.name"
-            class="opacity-50 font-normal text-sm "
+            class="opacity-50 font-normal text-sm"
             :class="'level-' + it.level"
             v-text="it.name"
           ></h3>
@@ -59,12 +59,14 @@
   </div>
 </template>
 <script setup>
-import "highlight.js/styles/intellij-light.css";
 import NavBar from "../index/views/NavBar.vue";
 import { sideBarItems as docs } from "../../routes";
 import { useRoute, useRouter } from "vue-router";
 import { computed, nextTick, onMounted, ref, watch } from "vue";
 import DocLinkCard from "./DocLinkCard.vue";
+import highlight from "highlight.js";
+import "highlight.js/styles/intellij-light.css";
+
 const router = useRouter();
 const route = useRoute() || { meta: {} };
 const doc_name = computed(() => route.name);
@@ -96,17 +98,29 @@ watch(
   }
 );
 
-onMounted(async () => {
-  tableOfContent.value = getTableOfContent();
+const doHightlighCode = async () => {
   try {
-    const it = await import("highlight.js");
-    const highlight = it.default || it;
+    await nextTick();
     highlight.highlightAll();
   } catch (e) {
     console.error(e);
   }
-  const anchor = document.querySelector(route.hash);
-  if (anchor) anchor.scrollIntoView({ behavior: "smooth" });
+};
+
+watch(
+  () => route.path,
+  () => {
+    doHightlighCode();
+  }
+);
+
+onMounted(async () => {
+  tableOfContent.value = getTableOfContent();
+  doHightlighCode();
+  if (route.hash) {
+    const anchor = document.querySelector(route.hash);
+    if (anchor) anchor.scrollIntoView({ behavior: "smooth" });
+  }
 });
 
 function getTableOfContent() {
